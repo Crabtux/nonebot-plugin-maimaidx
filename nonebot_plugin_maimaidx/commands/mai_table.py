@@ -93,7 +93,7 @@ async def _(match: Match[str] = RegexMatched(), user: User = Depends(GetUserAndA
                 reply_message=True,
             )
         pic = await draw_rating_table(
-            user, ra, True if plan and plan.lower() in COMBO_PLUS else False
+            user, ra, bool(plan and plan.lower() in COMBO_PLUS)
         )
         await rating_table_pfm.finish(pic, reply_message=True)
     else:

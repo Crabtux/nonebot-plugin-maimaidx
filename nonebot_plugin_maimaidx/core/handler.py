@@ -399,8 +399,15 @@ async def draw_play_data(user: User, song: Song) -> MessageSegment:
 
 @handle_errors
 async def get_mai_what(user: User) -> Song | None:
-    """"""
-    player, best50 = await get_best50(user)
+    """
+    随机获取曲目
+
+    Params:
+        `user`: 用户 `User` 模型
+    Returns:
+        `Song | None`
+    """
+    _player, best50 = await get_best50(user)
     r = random.randint(0, 1)
     _ra = 0
     ignore = []
@@ -574,7 +581,7 @@ async def draw_rise_score_list(
     Returns:
         `MessageSegment`
     """
-    player, best50 = await get_best50(user)
+    _player, best50 = await get_best50(user)
     play_result = await get_player_result(user)
 
     old_records = {(v.song_id, v.level_index): v for v in play_result}
@@ -702,8 +709,7 @@ async def draw_level_progress(
     else:
         y_size = get_notplayed_rows(len(notplayed)) * 65
         height = 240 + y_size + 120
-        if height < 600:
-            height = 600
+        height = max(height, 600)
         background_bg = tricolor_gradient_prism_plus(1400, height)
         ds = DrawScore(user.service, background_bg)
         image = ds.draw_category(category, notplayed)
