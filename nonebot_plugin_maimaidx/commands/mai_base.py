@@ -41,7 +41,12 @@ from ..core.merge.models import ServiceName, Theme
 from ..core.service import mai
 from ..core.tool import qqhash
 from ..resources import Root
-from .depend import GetOrCreateUser, GetUserAndAuth, GetUserAndAuthOrNone
+from .depend import (
+    GetOrCreateSender,
+    GetOrCreateUser,
+    GetUserAndAuth,
+    GetUserAndAuthOrNone,
+)
 
 AUTHORIZE_URL = build_authorize_url(
     lxnsconfig.lx_client_id or "", lxnsconfig.redirect_uri or ""
@@ -163,7 +168,7 @@ async def _():
 async def _(
     event: GroupMessageEvent | PrivateMessageEvent,
     message: Message = CommandArg(),
-    user: User = Depends(GetOrCreateUser),
+    user: User = Depends(GetOrCreateSender),
 ):
     is_private = isinstance(event, PrivateMessageEvent)
     if not is_binding_channel_allowed(
@@ -209,7 +214,7 @@ async def _(
 @bind_code.handle()
 async def _(
     event: GroupMessageEvent | PrivateMessageEvent,
-    user: User = Depends(GetOrCreateUser),
+    user: User = Depends(GetOrCreateSender),
 ):
     code = extract_authorization_code(event.get_plaintext())
     if code is None or not pending_bindings.is_active(event.self_id, event.user_id):

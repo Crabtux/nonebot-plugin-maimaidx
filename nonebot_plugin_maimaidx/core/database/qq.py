@@ -19,8 +19,7 @@ class UserBase(SQLModel):
 
 
 class User(UserBase, table=True):
-    ID: int = Field(default=None, primary_key=True, index=True, exclude=True)
-    qqid: int
+    qqid: int = Field(primary_key=True)
     friend_code: int | None = Field(default=None)
     access_token: str | None = Field(default=None)
     refresh_token: str | None = Field(default=None)
@@ -30,7 +29,7 @@ class User(UserBase, table=True):
     theme: Theme = Field(default=Theme.PRISM_PLUS, sa_column=Column(Enum(Theme)))
 
 
-engine = create_async_engine(f"sqlite+aiosqlite:///{str(db)}", echo=False)
+engine = create_async_engine(f"sqlite+aiosqlite:///{db!s}", echo=False)
 
 
 async def create_database():
