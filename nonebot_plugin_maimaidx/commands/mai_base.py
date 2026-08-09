@@ -226,7 +226,7 @@ async def _(
 
 
 @source.handle()
-async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateUser)):
+async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateSender)):
     args = message.extract_plain_text().strip()
     source_ = ServiceName.get_by_index(args)
     if source_ is None:
@@ -249,7 +249,7 @@ async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateUse
 
 
 @theme.handle()
-async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateUser)):
+async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateSender)):
     args = message.extract_plain_text().strip()
     theme_ = Theme.get_by_index(args)
     if theme_ is None:
@@ -260,7 +260,7 @@ async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateUse
 
 
 @portune.handle()
-async def _(user: User = Depends(GetOrCreateUser)):
+async def _(user: User = Depends(GetOrCreateSender)):
     fortune_hash = qqhash(user.qqid)
     daily_random = random.Random(fortune_hash)
     rp = fortune_hash % 100
