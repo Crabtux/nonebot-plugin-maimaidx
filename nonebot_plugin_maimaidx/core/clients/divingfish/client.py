@@ -19,7 +19,7 @@ class DivingFishAPI(ApiClient):
 
     def __init__(self, qqid: int | None = None, username: str | None = None):
         super().__init__(
-            base_url="https://maimai.diving-fish.com/api/maimaidxprober",
+            base_url=self.base_url,
             headers={"developer-token": dfconfig.divingfish_token}
             if dfconfig.divingfish_token
             else None,
@@ -63,8 +63,8 @@ class DivingFishAPI(ApiClient):
         return await self._request(method, endpoint, **kwargs)
 
     @classmethod
-    def set_proxy(self) -> None:
-        self.base_url = self.proxy_url + "/maimaidxprober"
+    def set_proxy(cls) -> None:
+        cls.base_url = cls.proxy_url + "/maimaidxprober"
 
     async def music_data(self) -> list:
         """获取曲目数据"""
