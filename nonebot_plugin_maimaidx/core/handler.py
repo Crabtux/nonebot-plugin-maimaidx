@@ -18,6 +18,8 @@ from ..constants import (
     VERSION_MAP,
 )
 from .clients.divingfish.client import DivingFishAPI
+from .clients.divingfish.models import DeviceAuthorization
+from .clients.divingfish.oauth import DivingFishOAuth
 from .clients.exceptions import MusicNotPlayError, NotMusicRecommendationError
 from .clients.lxns.client import LxnsAPI, OAuth2
 from .clients.lxns.models import BaseToken, OAuth2Token, SongType
@@ -118,6 +120,18 @@ async def bind_lxns(user: User, code: str) -> str:
     else:
         result = "授权完成。"
     return result
+
+
+async def bind_divingfish(qqid: int) -> DeviceAuthorization:
+    """
+    发起水鱼查分器绑定，返回给用户点开的授权信息
+
+    Params:
+        `qqid`: 用户QQ
+    Returns:
+        `DeviceAuthorization`
+    """
+    return await DivingFishOAuth().device_authorization(qqid)
 
 
 async def get_best50(

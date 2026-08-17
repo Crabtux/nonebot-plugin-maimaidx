@@ -18,12 +18,14 @@ from PIL import Image
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 
-from ..config import log, lxnsconfig, maiconfig
+from ..config import dfconfig, log, lxnsconfig, maiconfig
 from ..constants import FORTUNE, LEVEL_LIST
 from ..core.clients.divingfish.client import DivingFishAPI
+from ..core.clients.divingfish.oauth import REVOKE_URL, binding_label
 from ..core.clients.exceptions import HTTPError, UnknownError
 from ..core.database.qq import User, update_user
 from ..core.handler import (
+    bind_divingfish,
     bind_lxns,
     draw_chart_info,
     draw_rating_ranking,
@@ -69,6 +71,22 @@ AUTHORIZE_MSG = dedent(f"""
     「隐私设置」开启允许读取成绩，否
     则BOT将无法查询您的成绩
 """).strip()
+DIVINGFISH_AUTHORIZE_MSG = dedent("""
+    请完成水鱼查分器授权：
+
+    1. 打开以下链接并登录水鱼账号
+    =======================
+    {url}
+    =======================
+    2. 确认页面显示的绑定身份为「{label}」后点击「同意授权」
+
+    链接 {minutes} 分钟内有效，授权完成后直接使用查询指令即可，无需回复授权码。
+    =======================
+    请注意！！这条链接仅供您本人使用，请勿转发他人。
+    如需取消授权，请前往 {revoke}
+""").strip()
+DIVINGFISH_OAUTH_ERROR = "BOT管理员尚未配置水鱼查分器 OAuth 应用，无法进行绑定授权。"
+DIVINGFISH_BIND_FAILED_MSG = "发起水鱼授权失败：水鱼账号服务可能暂时不可用，请稍后再试。"
 LXNS_ERROR = "BOT管理员尚未配置落雪查分器相关信息"
 GROUP_BIND_GUIDE = (
     "BOT 管理员已将落雪绑定设置为仅私聊。\n"
@@ -121,6 +139,7 @@ update_data = on_command("更新maimai数据", permission=SUPERUSER)
 help = on_command("帮助maimaiDX", aliases={"帮助maimaidx"})
 maimaidxrepo = on_command("项目地址maimaiDX", aliases={"项目地址maimaidx"})
 bind = on_command("lxbind", aliases={"绑定落雪", "绑定lx"}, block=True)
+df_bind = on_command("dfbind", aliases={"绑定水鱼", "绑定df"}, block=True)
 bind_code = on_message(
     rule=is_type(GroupMessageEvent, PrivateMessageEvent)
     & Rule(is_pending_authorization_code),
@@ -223,6 +242,28 @@ async def _(
     if succeeded:
         pending_bindings.consume(event.self_id, event.user_id)
     await bind_code.finish(result, reply_message=True)
+
+
+@df_bind.handle()
+async def _(user: User = Depends(GetOrCreateSender)):
+    if not dfconfig.oauth_enabled:
+        await df_bind.finish(DIVINGFISH_OAUTH_ERROR, reply_message=True)
+
+    try:
+        authorization = await bind_divingfish(user.qqid)
+    except (HTTPError, HTTPXError, UnknownError, ValidationError) as error:
+        log.warning(f"水鱼授权发起失败：{type(error).__name__}")
+        await df_bind.finish(DIVINGFISH_BIND_FAILED_MSG, reply_message=True)
+
+    await df_bind.finish(
+        DIVINGFISH_AUTHORIZE_MSG.format(
+            url=authorization.verification_uri_complete,
+            label=binding_label(user.qqid),
+            minutes=max(authorization.expires_in // 60, 1),
+            revoke=dfconfig.divingfish_auth_url.rstrip("/") + REVOKE_URL,
+        ),
+        reply_message=True,
+    )
 
 
 @source.handle()
