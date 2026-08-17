@@ -170,7 +170,7 @@ async def get_player_result(
         if version is not None:
             data = await api.query_user_plate(version)
         else:
-            result = await api.query_user_get_dev()
+            result = await api.query_user_records()
             data = result.records
         play_result = df_to_playresult(data)
     elif user.service == ServiceName.LXNS:
@@ -369,7 +369,7 @@ async def draw_play_data(user: User, song: Song) -> MessageSegment:
     """
     if user.service == ServiceName.DIVINGFISH:
         api = DivingFishAPI(qqid=user.qqid)
-        data = await api.query_user_post_dev(song_id=song.song_id)
+        data = await api.query_user_record(song_id=song.song_id)
         if not data:
             raise MusicNotPlayError
 

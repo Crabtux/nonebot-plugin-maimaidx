@@ -19,6 +19,15 @@ class BaseConfig(BaseModel):
 class DivingFishConfig(BaseModel):
     divingfish_prober_proxy: bool = False
     divingfish_token: str | None = None
+    """开发者 token，已弃用，水鱼查分器将停止签发并在过渡期后关闭该鉴权方式，
+    请改用 `divingfish_client_id` 与 `divingfish_client_secret`"""
+    divingfish_client_id: str | None = None
+    divingfish_client_secret: str | None = None
+    divingfish_auth_url: str = "https://auth.diving-fish.com"
+
+    @property
+    def oauth_enabled(self) -> bool:
+        return bool(self.divingfish_client_id and self.divingfish_client_secret)
 
 
 class LxnsConfig(BaseModel):

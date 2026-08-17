@@ -19,3 +19,15 @@ class DivingFishTokenNotFoundError(HTTPError):
 
 class DivingFishTokenError(TokenError):
     """Token错误"""
+
+
+class DivingFishNotAuthorizedError(PlayerDataError):
+    """用户未授权BOT访问水鱼查分器数据"""
+
+
+class DivingFishTooManyRequestsError(HTTPError):
+    """请求次数超出配额"""
+
+
+class DivingFishOAuthError(HTTPError):
+    """水鱼查分器 OAuth 请求失败"""
