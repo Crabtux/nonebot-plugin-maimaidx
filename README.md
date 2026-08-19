@@ -98,7 +98,10 @@
    ASSETS_ONLINE=true                   # 对于有 `icon` 和 `plate` 资源的可将此项改为 `false`，如果没有请默认，否则使用落雪查分器时无法使用
 
    # diving-fish                        # 水鱼查分器配置
-   DIVINGFISH_TOKEN=                    # 开发者 token，由于水鱼查分器修改了请求鉴权，未填写的仅可使用 `b50` 指令
+   DIVINGFISH_CLIENT_ID=                # OAuth 应用ID，向水鱼申请应用后获得
+   DIVINGFISH_CLIENT_SECRET=            # OAuth 应用秘钥
+   DIVINGFISH_AUTH_URL=                 # 水鱼账号地址，默认 https://auth.diving-fish.com，一般不需要填
+   DIVINGFISH_TOKEN=                    # 开发者 token，已弃用，见下方说明
    DIVINGFISH_PROBER_PROXY=false        # 是否使用中转访问水鱼查分器，适用于境外服务器
 
    # lxns                               # 落雪查分器配置，均未填写将无法使用落雪查分器
@@ -108,6 +111,12 @@
    REDIRECT_URI=                        # OAuth 回调地址
    LXNS_BIND_PRIVATE_ONLY=false         # 是否仅允许私聊完成 OAuth 绑定，默认允许群聊和私聊
    ```
+
+> [!NOTE]
+> 使用水鱼 OAuth 绑定时，用户发送 `dfbind`（或「绑定水鱼」），BOT 会返回一条授权链接，用户打开并确认页面上显示的绑定身份后点击「同意授权」即可，**不需要把授权码回贴给 BOT**。绑定关系与授权范围保存在水鱼服务端，BOT 只保管应用凭据，不保存任何用户令牌；用户可随时在 https://auth.diving-fish.com/apps 撤销授权。未绑定的用户仍可使用 `b50` 指令。
+
+> [!WARNING]
+> `DIVINGFISH_TOKEN`（开发者 token）已被水鱼查分器弃用：它能按 QQ 号读取任意用户的成绩，用户从未对 BOT 做过授权，也无法撤销。水鱼已停止签发新的开发者 token，并将在过渡期后关闭该鉴权方式。请改为申请 OAuth 应用并配置 `DIVINGFISH_CLIENT_ID` 与 `DIVINGFISH_CLIENT_SECRET`。两者同时配置时优先使用 OAuth 授权。
 
 > [!NOTE]
 > 使用落雪 OAuth 绑定时，可在群聊或私聊发送 `lxbind`，按提示完成授权后发送授权码或完整回调链接；群聊发起的绑定也可以转到同一 Bot 的私聊完成。若设置 `LXNS_BIND_PRIVATE_ONLY=true`，群聊只会提示用户添加 Bot 好友后前往私聊。部分 OneBot 实现无法接收陌生人的私聊消息，因此该选项默认关闭。

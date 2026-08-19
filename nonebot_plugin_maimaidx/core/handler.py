@@ -18,6 +18,8 @@ from ..constants import (
     VERSION_MAP,
 )
 from .clients.divingfish.client import DivingFishAPI
+from .clients.divingfish.models import DeviceAuthorization
+from .clients.divingfish.oauth import DivingFishOAuth
 from .clients.exceptions import MusicNotPlayError, NotMusicRecommendationError
 from .clients.lxns.client import LxnsAPI, OAuth2
 from .clients.lxns.models import BaseToken, OAuth2Token, SongType
@@ -120,6 +122,18 @@ async def bind_lxns(user: User, code: str) -> str:
     return result
 
 
+async def bind_divingfish(qqid: int) -> DeviceAuthorization:
+    """
+    发起水鱼查分器绑定，返回给用户点开的授权信息
+
+    Params:
+        `qqid`: 用户QQ
+    Returns:
+        `DeviceAuthorization`
+    """
+    return await DivingFishOAuth().device_authorization(qqid)
+
+
 async def get_best50(
     user: User, *, username: str | None = None, all_perfect: bool = False
 ) -> tuple[Player, Best50]:
@@ -170,7 +184,7 @@ async def get_player_result(
         if version is not None:
             data = await api.query_user_plate(version)
         else:
-            result = await api.query_user_get_dev()
+            result = await api.query_user_records()
             data = result.records
         play_result = df_to_playresult(data)
     elif user.service == ServiceName.LXNS:
@@ -369,7 +383,7 @@ async def draw_play_data(user: User, song: Song) -> MessageSegment:
     """
     if user.service == ServiceName.DIVINGFISH:
         api = DivingFishAPI(qqid=user.qqid)
-        data = await api.query_user_post_dev(song_id=song.song_id)
+        data = await api.query_user_record(song_id=song.song_id)
         if not data:
             raise MusicNotPlayError
 
