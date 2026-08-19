@@ -22,7 +22,7 @@ class DivingFishAPI(ApiClient):
 
     def __init__(self, qqid: int | None = None, username: str | None = None):
         #: 授权模式下查谁由令牌决定，请求里不再携带 `qq`，也不需要开发者 token
-        self.oauth = dfconfig.oauth_enabled and qqid is not None and username is None
+        self.oauth = dfconfig.oauth_enabled and qqid is not None and not username
         super().__init__(
             base_url=self.base_url,
             headers=None
