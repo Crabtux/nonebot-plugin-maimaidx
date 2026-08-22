@@ -99,7 +99,7 @@ def handle_errors(func):
             return MessageSegment.text("您未游玩过曲目。")
         except NotMusicRecommendationError:
             return MessageSegment.text("没有乐曲推荐呢。可能是您太强了。")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             log.error(f"发生错误: {traceback.format_exc()}")
             return MessageSegment.text(
                 f"发生未知错误：{type(e).__name__}\n请联系BOT管理员。"

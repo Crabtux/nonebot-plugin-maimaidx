@@ -1,7 +1,7 @@
 import uuid
 
 # vote
-VOTE_URL = "https://www.yuzuchan.moe/vote"
+VOTE_URL = "https://www.yuzuchan.moe/maimaidx/aliases"
 
 # ws
 UUID = uuid.uuid1()

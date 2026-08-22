@@ -1,4 +1,26 @@
+from enum import IntFlag
+
 from pydantic import BaseModel
+
+
+class DivingFishScope(IntFlag):
+    PROFILE = 1
+    PROBER_PROFILE_READ = 2
+    PROBER_RECORDS_READ = 4
+    PROBER_RECORDS_WRITE = 8
+    CHUNITHM_RECORDS_READ = 16
+    CHUNITHM_RECORDS_WRITE = 32
+
+
+DIVINGFISH_SCOPE_NAMES = {
+    DivingFishScope.PROFILE: "profile",
+    DivingFishScope.PROBER_PROFILE_READ: "prober.profile.read",
+    DivingFishScope.PROBER_RECORDS_READ: "prober.records.read",
+    DivingFishScope.PROBER_RECORDS_WRITE: "prober.records.write",
+    DivingFishScope.CHUNITHM_RECORDS_READ: "chunithm.records.read",
+    DivingFishScope.CHUNITHM_RECORDS_WRITE: "chunithm.records.write",
+}
+DIVINGFISH_SCOPE_MASK = sum(scope.value for scope in DivingFishScope)
 
 
 class DeviceAuthorization(BaseModel):

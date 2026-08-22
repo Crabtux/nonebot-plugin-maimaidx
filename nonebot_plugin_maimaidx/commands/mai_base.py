@@ -74,7 +74,7 @@ AUTHORIZE_MSG = dedent(f"""
 DIVINGFISH_AUTHORIZE_MSG = dedent("""
     请完成水鱼查分器授权：
 
-    1. 打开以下链接并登录水鱼账号
+    1. 打开以下链接并登录水鱼账号，授权「{bot_name} BOT」访问您的水鱼查分器数据
     =======================
     {url}
     =======================
@@ -86,7 +86,9 @@ DIVINGFISH_AUTHORIZE_MSG = dedent("""
     如需取消授权，请前往 {revoke}
 """).strip()
 DIVINGFISH_OAUTH_ERROR = "BOT管理员尚未配置水鱼查分器 OAuth 应用，无法进行绑定授权。"
-DIVINGFISH_BIND_FAILED_MSG = "发起水鱼授权失败：水鱼账号服务可能暂时不可用，请稍后再试。"
+DIVINGFISH_BIND_FAILED_MSG = (
+    "发起水鱼授权失败：水鱼账号服务可能暂时不可用，请稍后再试。"
+)
 LXNS_ERROR = "BOT管理员尚未配置落雪查分器相关信息"
 GROUP_BIND_GUIDE = (
     "BOT 管理员已将落雪绑定设置为仅私聊。\n"
@@ -257,6 +259,7 @@ async def _(user: User = Depends(GetOrCreateSender)):
 
     await df_bind.finish(
         DIVINGFISH_AUTHORIZE_MSG.format(
+            bot_name=maiconfig.bot_name,
             url=authorization.verification_uri_complete,
             label=binding_label(user.qqid),
             minutes=max(authorization.expires_in // 60, 1),
@@ -272,7 +275,8 @@ async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateSen
     source_ = ServiceName.get_by_index(args)
     if source_ is None:
         await source.finish(
-            f"未找到该数据源：\n{ServiceName.get_help()}", reply_message=True
+            f"未找到该数据源，请输入指定数字切换：\n{ServiceName.get_help()}",
+            reply_message=True,
         )
     if (
         source_ == ServiceName.LXNS
@@ -286,7 +290,7 @@ async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateSen
         )
 
     await update_user(user.qqid, service=source_)
-    await source.send(f"数据源已切换为：「{source_.value}」", reply_message=True)
+    await source.send(f"已切换数据源为：「{source_.value}」", reply_message=True)
 
 
 @theme.handle()
@@ -294,10 +298,13 @@ async def _(message: Message = CommandArg(), user: User = Depends(GetOrCreateSen
     args = message.extract_plain_text().strip()
     theme_ = Theme.get_by_index(args)
     if theme_ is None:
-        await theme.finish(f"未找到该主题：\n{Theme.get_help()}", reply_message=True)
+        await theme.finish(
+            f"未找到该主题，请输入指定数字切换：\n{Theme.get_help()}",
+            reply_message=True,
+        )
 
     await update_user(user.qqid, theme=theme_)
-    await theme.send(f"主题已切换为：「{theme_.value}」", reply_message=True)
+    await theme.send(f"已切换主题为：「{theme_.value}」", reply_message=True)
 
 
 @portune.handle()

@@ -26,7 +26,6 @@ from .models import AccessToken, DeviceAuthorization
 
 DEVICE_CODE_GRANT = "urn:ietf:params:oauth:grant-type:device_code"
 ON_BEHALF_OF_GRANT = "urn:diving-fish:params:oauth:grant-type:on-behalf-of"
-SCOPE = "prober.records.read"
 REVOKE_URL = "/apps"
 
 #: 提前一点过期，避免令牌在请求途中失效
@@ -87,7 +86,7 @@ class DivingFishOAuth(ApiClient):
         data = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
-            "scope": SCOPE,
+            "scope": dfconfig.divingfish_oauth_scope,
             "subject_ref": subject_ref(qqid),
             "binding_label": binding_label(qqid),
         }
@@ -103,7 +102,7 @@ class DivingFishOAuth(ApiClient):
             "client_id": self.client_id,
             "client_secret": self.client_secret,
             "subject": f"ref:{subject_ref(qqid)}",
-            "scope": SCOPE,
+            "scope": dfconfig.divingfish_oauth_scope,
         }
         result = await self._request_data("POST", "/oauth/token", data=data)
         return AccessToken.model_validate(result)

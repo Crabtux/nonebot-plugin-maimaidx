@@ -76,9 +76,7 @@ class PendingBindingStore:
 
     def _clear_expired(self, now: float) -> None:
         expired = [
-            key
-            for key, expires_at in self._expires_at.items()
-            if expires_at <= now
+            key for key, expires_at in self._expires_at.items() if expires_at <= now
         ]
         for key in expired:
             del self._expires_at[key]

@@ -8,7 +8,7 @@ from nonebot.params import CommandArg, Depends
 
 from ..config import log
 from ..core.database.qq import User
-from ..core.handler import draw_best50, draw_play_data, draw_song_galobal_data
+from ..core.handler import draw_best50, draw_play_data, draw_song_global_data
 from ..core.image.tools import text_to_bytes_io
 from ..core.merge.models import ServiceName
 from ..core.service import mai
@@ -101,7 +101,7 @@ async def _(message: Message = CommandArg()):
     if stats is None:
         await ginfo.finish("该等级没有统计信息", reply_message=True)
 
-    data = await draw_song_galobal_data(song, level_index) + dedent(f"""\
+    data = await draw_song_global_data(song, level_index) + dedent(f"""\
         游玩次数：{round(stats.cnt)}
         拟合难度：{stats.fit_diff:.2f}
         平均达成率：{stats.avg:.2f}%

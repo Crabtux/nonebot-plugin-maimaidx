@@ -6,7 +6,7 @@ from nonebot.plugin import PluginMetadata, require
 
 from . import commands as commands
 from .config import BaseConfig, dfconfig, driver, log, lxnsconfig, maiconfig
-from .core.alias_ws_push import ws_alias_server
+from .core.alias_sse_push import sse_alias_server
 from .core.clients.divingfish.client import DivingFishAPI
 from .core.database.qq import create_database
 from .core.image import AssetsImage
@@ -15,7 +15,7 @@ from .resources import plate_table_dir, rating_table_dir
 
 scheduler = require("nonebot_plugin_apscheduler")
 
-from nonebot_plugin_apscheduler import scheduler  # noqa: E402, F811
+from nonebot_plugin_apscheduler import scheduler  # noqa: F811
 
 __plugin_meta__ = PluginMetadata(
     name="nonebot-plugin-maimaidx",
@@ -46,7 +46,7 @@ async def get_music():
 
     if maiconfig.maimaidx_alias_push:
         log.opt(colors=True).info("别名推送为「<g>开启</g>」状态")
-        asyncio.ensure_future(ws_alias_server())
+        asyncio.ensure_future(sse_alias_server())
     else:
         log.opt(colors=True).info("别名推送为「<r>关闭</r>」状态")
 

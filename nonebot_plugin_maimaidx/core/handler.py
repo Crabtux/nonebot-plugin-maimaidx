@@ -305,7 +305,7 @@ def get_rise_score_list(
     return sampled, lowest_ra
 
 
-async def draw_song_galobal_data(song: Song, level_index: int) -> MessageSegment:
+async def draw_song_global_data(song: Song, level_index: int) -> MessageSegment:
     """
     绘制谱面数据
 
@@ -481,7 +481,7 @@ async def draw_chart_info(song: Song, user: User | None = None) -> MessageSegmen
                     else:
                         best_list = best50.sd
                         is_full = bool(len(best_list) == 35)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 calc = False
         else:
             theme = Theme.PRISM_PLUS

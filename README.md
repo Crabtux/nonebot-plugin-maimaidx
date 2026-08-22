@@ -12,19 +12,13 @@
 
 ## 重要更新
 
-**2026-06-30**
+**2026-08-20**
 
-1. 替换 `rating` 数字新素材，直接覆盖 `mai/pic` 目录，增量包：
-
-   - [Cloudreve私人云盘](https://cloud.yuzuchan.moe/f/Jvhl/Resource%20CN1.56%20UPDATE.7z)
-   - [onedrive](https://yuzuai-my.sharepoint.com/:u:/g/personal/yuzu_yuzuchan_moe/IQDS_RzM66klSqvHtUhfFPTfAfpJcbGlIbL-7Q6eSPxM4CA?e=xRPo7b)
-   - [openlist](https://share.yuzuchan.moe/d/downloads/Resource%20CN1.56%20UPDATE.7z?sign=p6h2Q9f3u87vRO8yU6ZSvCoagq0BE-xnX4wlhM55s_U=:0)
-
-2. 恢复查询TA人成绩的功能
-3. 修复15完成表绘图偏移的问题
-4. 修复进度表完成时文字重叠的问题
-5. 优化部分绘图
-6. 修复部分bug
+1. 水鱼查分器新增 `OAuth` 认证，请根据 [配置](#配置) 示例填入相关 后续开发者Token将被废弃
+2. 新增 `dfbind` 指令
+3. 使用 `SSE` 替代 `websocket` 推送
+4. 移除了申请别名通过和拒绝的推送
+5. 修改部分绘图
 
 **2026-06-09**
 
@@ -52,37 +46,33 @@
 
 ## 安装
 
-
 1. 安装 `nonebot-plugin-maimaidx`
+   - 使用 `nb-cli` 安装
+     ```python
+     nb plugin install nonebot-plugin-maimaidx
+     ```
+   - 使用 `pip` 安装
+     ```python
+     pip install nonebot-plugin-maimaidx
+     ```
+   - 使用源代码，**请自行安装额外依赖**
+     ```git
+     git clone https://github.com/Yuri-YuzuChaN/nonebot-plugin-maimaidx
+     ```
 
-    - 使用 `nb-cli` 安装
-        ``` python
-        nb plugin install nonebot-plugin-maimaidx
-        ```
-    - 使用 `pip` 安装
-        ``` python
-        pip install nonebot-plugin-maimaidx
-        ```
-    - 使用源代码，**请自行安装额外依赖**
-        ``` git
-        git clone https://github.com/Yuri-YuzuChaN/nonebot-plugin-maimaidx
-        ```
-    
 2. 安装 `chromium`，**相关依赖已安装，请直接使用该指令执行**
 
-    ``` shell
-    playwright install --with-deps chromium
-    ```
+   ```shell
+   playwright install --with-deps chromium
+   ```
 
 3. 安装 `微软雅黑` 字体，解决使用 `ginfo` 指令字体不渲染的问题，例如 `ubuntu`：`apt install fonts-wqy-microhei`
-
 
 ## 配置
 
 1. 下载静态资源文件，将该压缩文件解压后，将 `static` 文件夹复制到随意一个文件夹进行存放。对于先前使用过的开发者，请将原先 `static` 文件夹内的所有 `json` 文件放置到 `static/data` 文件夹，字体文件放置到 `static/font` 文件夹
-    
-    ## 对于美术的声明，请勿将绘图设计署名进行删除
 
+   ## 对于美术的声明，请勿将绘图设计署名进行删除
    - [Cloudreve私人云盘](https://cloud.yuzuchan.moe/f/34s7/Resource%20CN1.55.7z)
    - [onedrive](https://yuzuai-my.sharepoint.com/:u:/g/personal/yuzu_yuzuchan_moe/IQBGKHie6MAaTZy3rME7Q-ruAVKgXDCKROqz5e25KtMeeVY?e=53eC6a)
    - [openlist](https://share.yuzuchan.moe/d/downloads/Resource%20CN1.55.7z?sign=4wMRn_9n6YZiEVV2vELKCEOj9zsgxScnmgtjsEL3C6g=:0)
@@ -100,7 +90,18 @@
    # diving-fish                        # 水鱼查分器配置
    DIVINGFISH_CLIENT_ID=                # OAuth 应用ID，向水鱼申请应用后获得
    DIVINGFISH_CLIENT_SECRET=            # OAuth 应用秘钥
-   DIVINGFISH_AUTH_URL=                 # 水鱼账号地址，默认 https://auth.diving-fish.com，一般不需要填
+   DIVINGFISH_SCOPE=4                   # OAuth 权限权重，多个权限之和，默认值为 `4`
+
+        # 以下是各个scope权重，请开发者按自身申请的OAuth权限，根据以下权限权重之和填写，例如：
+        # 「读取你在查分器的资料」的权重为 `2`，「读取你的舞萌 DX 成绩的权重」为 `4`，所以 `SCOPE` 填写 `6`。
+        profile = 1
+        prober.profile.read = 2
+        prober.records.read = 4
+        prober.records.write = 8
+        chunithm.records.read = 16
+        chunithm.records.write = 32
+
+   DIVINGFISH_AUTH_URL=                 # 水鱼账号地址，一般不需要填写，默认为 `https://auth.diving-fish.com`
    DIVINGFISH_TOKEN=                    # 开发者 token，已弃用，见下方说明
    DIVINGFISH_PROBER_PROXY=false        # 是否使用中转访问水鱼查分器，适用于境外服务器
 
@@ -133,11 +134,31 @@
 
 ![img](https://raw.githubusercontent.com/Yuri-YuzuChaN/nonebot-plugin-maimaidx/master/nonebot_plugin_maimaidx/maimaidxhelp.png)
 
-
 ## 更新说明
 
 <details>
 <summary>Version 3.0 更新日志</summary>
+
+**2026-08-20**
+
+1. 水鱼查分器新增 `OAuth` 认证，请根据 [配置](#配置) 示例填入相关 后续开发者Token将被废弃
+2. 新增 `dfbind` 指令
+3. 使用 `SSE` 替代 `websocket` 推送
+4. 移除了申请别名通过和拒绝的推送
+5. 修改部分绘图
+
+**2026-06-30**
+
+1. 替换 `rating` 数字新素材，直接覆盖 `mai/pic` 目录，增量包：
+   - [Cloudreve私人云盘](https://cloud.yuzuchan.moe/f/Jvhl/Resource%20CN1.56%20UPDATE.7z)
+   - [onedrive](https://yuzuai-my.sharepoint.com/:u:/g/personal/yuzu_yuzuchan_moe/IQDS_RzM66klSqvHtUhfFPTfAfpJcbGlIbL-7Q6eSPxM4CA?e=xRPo7b)
+   - [openlist](https://share.yuzuchan.moe/d/downloads/Resource%20CN1.56%20UPDATE.7z?sign=p6h2Q9f3u87vRO8yU6ZSvCoagq0BE-xnX4wlhM55s_U=:0)
+
+2. 恢复查询TA人成绩的功能
+3. 修复15完成表绘图偏移的问题
+4. 修复进度表完成时文字重叠的问题
+5. 优化部分绘图
+6. 修复部分bug
 
 **2026-06-09**
 
