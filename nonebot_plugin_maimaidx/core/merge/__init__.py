@@ -217,11 +217,8 @@ async def merge_music_data(
         if song is None:
             continue
 
-        for s in stat_list:
-            for diff in song.difficulties:
-                if diff.level == s.diff:
-                    diff.stats = s
-                    break
+        for diff, stat in zip(song.difficulties, stat_list):
+            diff.stats = stat
 
     result = MusicList(root=song_map.values())
     await writefile(merge_music_file, result.model_dump())
