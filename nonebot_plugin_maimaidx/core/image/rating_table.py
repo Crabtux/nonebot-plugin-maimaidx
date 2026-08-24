@@ -257,8 +257,8 @@ class DrawRatingTable(AssetsImage):
 
         else:
             current_y = RatingGridConfig.start_y
-            for ra, songs in lv_data.items():
-                for num, song in enumerate(lv_data[ra]):
+            for songs in lv_data.values():
+                for num, song in enumerate(songs):
                     row, col = divmod(num, RatingGridConfig.row_count)
                     x = RatingGridConfig.start_x + col * RatingGridConfig.gap
                     y = current_y + row * RatingGridConfig.gap

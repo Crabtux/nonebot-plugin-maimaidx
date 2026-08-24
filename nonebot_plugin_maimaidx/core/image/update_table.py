@@ -25,7 +25,7 @@ class UpdateTable(AssetsImage):
     def __init__(self):
         super().__init__()
         self.level_list = LEVEL_LIST[6:]
-        self.version_list = list(_ for _ in DX_VERSION.keys())[1:]
+        self.version_list = list(DX_VERSION)[1:]
 
     def _generate_bg(self, height: int, separator_height: int) -> Image.Image:
         """
@@ -267,9 +267,13 @@ class UpdateTable(AssetsImage):
                 continue
 
             def get_ds_sort_key(song: Song):
-                if song_id_list is not None and remaster_song_list is not None:
-                    if song.song_id in song_id_list and song in remaster_song_list:
-                        return song.difficulties[4].level_value
+                if (
+                    song_id_list is not None
+                    and remaster_song_list is not None
+                    and song.song_id in song_id_list
+                    and song in remaster_song_list
+                ):
+                    return song.difficulties[4].level_value
                 return song.difficulties[3].level_value
 
             songs.sort(key=get_ds_sort_key, reverse=True)
@@ -348,7 +352,7 @@ class UpdateTable(AssetsImage):
             single_time = time.time()
             if name in PLATE_CN:
                 name = PLATE_CN[name]
-            ver, version_name = VERSION_MAP.get(name, ([DX_VERSION.get(name)], name))
+            _ver, version_name = VERSION_MAP.get(name, ([DX_VERSION.get(name)], name))
 
             song_list = self._get_song_list(version_name)
             level_dict = self._get_level_dict()

@@ -21,7 +21,7 @@ class DrawText:
         pos_x: int,
         pos_y: int,
         size: int,
-        text: str | int | float,
+        text: str | float,
         color: tuple[int, int, int, int] = (255, 255, 255, 255),
         anchor: str = "lt",
         stroke_width: int = 0,
@@ -97,12 +97,8 @@ def tricolor_gradient_prism_plus(width: int, height: int) -> Image.Image:
 def radial_gradient(
     width: int,
     height: int,
-    colors: list[tuple[int, int, int]] = [
-        (255, 223, 233),
-        (255, 162, 198),
-        (255, 12, 235),
-    ],
-    positions: list[float] = [0, 0.5, 1],
+    colors: list[tuple[int, int, int]] | None = None,
+    positions: list[float] | None = None,
 ) -> Image.Image:
     """
     绘制径向渐变色
@@ -115,6 +111,10 @@ def radial_gradient(
     Returns:
         `Image.Image`
     """
+    if colors is None:
+        colors = [(255, 223, 233), (255, 162, 198), (255, 12, 235)]
+    if positions is None:
+        positions = [0, 0.5, 1]
     y, x = np.ogrid[:height, :width]
     cx, cy = (width / 2, height / 2)
 
@@ -243,7 +243,7 @@ def text_to_image(text: str) -> Image.Image:
     max_width = 0
     b = 0
     for line in lines:
-        l, t, r, b = font.getbbox(line)  # noqa: E741
+        _l, _t, r, b = font.getbbox(line)
         max_width = max(max_width, r)
     wa = max_width + padding * 2
     ha = b * len(lines) + margin * (len(lines) - 1) + padding * 2
@@ -264,8 +264,7 @@ def text_to_bytes_io(text: str) -> BytesIO:
 
 
 def base64_to_bytesio(base64_str: str) -> BytesIO:
-    if base64_str.startswith("base64://"):
-        base64_str = base64_str[len("base64://") :]
+    base64_str = base64_str.removeprefix("base64://")
     byte_data = base64.b64decode(base64_str)
     return BytesIO(byte_data)
 

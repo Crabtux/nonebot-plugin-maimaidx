@@ -481,7 +481,7 @@ async def draw_chart_info(song: Song, user: User | None = None) -> MessageSegmen
                     else:
                         best_list = best50.sd
                         is_full = bool(len(best_list) == 35)
-            except Exception:  # noqa: BLE001
+            except Exception:
                 calc = False
         else:
             theme = Theme.PRISM_PLUS

@@ -34,3 +34,14 @@ dependencies = [
 
 [tool.setuptools.package-data]
 "*" = ["maimaidxhelp.png"]
+
+[tool.ruff.lint]
+ignore = [
+    "BLE001",
+    "DTZ005",
+    "PLE0704",
+    "RUF012",
+    "B008",
+    "S110",
+    "S112"
+]

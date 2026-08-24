@@ -110,9 +110,8 @@ class GroupAlias:
         if not group_alias_file.exists():
             self.push = AliasesPush()
         else:
-            self.push = AliasesPush.model_validate(
-                json.load(open(group_alias_file, "r", encoding="utf-8"))
-            )
+            with open(group_alias_file, "r", encoding="utf-8") as f:
+                self.push = AliasesPush.model_validate(json.loads(f.read()))
 
     async def on(self, gid: int) -> str:
         """开启推送"""
@@ -149,19 +148,17 @@ alias = GroupAlias()
 
 
 class Guess:
-    _group: dict[int, GuessDefaultData | GuessPicData] = {}
-    switch: GuessSwitch
-    hot_music_ids: list[int] = []
-    _guess_data: list[Song] = []
-
     def __init__(self) -> None:
         """猜歌类"""
+        self._group: dict[int, GuessDefaultData | GuessPicData] = {}
+        self.hot_music_ids: list[int] = []
+        self._guess_data: list[Song] = []
+
         if not guess_file.exists():
             self.switch = GuessSwitch()
         else:
-            self.switch = GuessSwitch.model_validate(
-                json.load(open(guess_file, "r", encoding="utf-8"))
-            )
+            with open(guess_file, "r", encoding="utf-8") as f:
+                self.switch = GuessSwitch.model_validate(json.loads(f.read()))
 
     def guess(self):
         """初始化猜歌数据"""

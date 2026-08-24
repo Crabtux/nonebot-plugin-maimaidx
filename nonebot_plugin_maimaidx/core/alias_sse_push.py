@@ -99,23 +99,10 @@ async def push_alias(push: PushAliasStatus):
                 "检测到新的别名申请，可使用同意别名指令进行投票，点击下方链接查看详情：\n"
                 f"「{VOTE_URL}」\n如果不需要接收推送消息，请使用「关闭别名推送」指令关闭推送"
             )
-        if num == 0 and push.type == "End":
-            message.append(
-                "检测到新增别名，如果不需要接收推送消息，请使用「关闭别名推送」指令关闭推送"
-            )
         if push.type == "Apply":
             message.append(
                 dedent(f"""\
                 {item.tag}：
-                ID：{song_id}
-                标题：{song.song_name}
-                别名：{alias_name}
-            """).strip()
-                + await draw_chart_info(song)
-            )
-        if push.type == "End":
-            message.append(
-                dedent(f"""\
                 ID：{song_id}
                 标题：{song.song_name}
                 别名：{alias_name}
@@ -131,7 +118,7 @@ async def push_alias(push: PushAliasStatus):
         try:
             await bot.send_group_forward_msg(group_id=gid, message=forward)
             await asyncio.sleep(5)
-        except Exception:  # noqa: BLE001, S112
+        except Exception:
             continue
 
 
@@ -179,9 +166,7 @@ async def sse_alias_server():
                             continue
                         try:
                             payload = json.loads(message.data)
-                            if not isinstance(payload, dict):
-                                raise ValueError("消息体必须是 JSON 对象")  # noqa: TRY004
-                            if payload.get("type") not in ("Apply", "End"):
+                            if payload.get("type") == "Apply":
                                 continue
                             push = PushAliasStatus.model_validate(payload)
                             await push_alias(push)

@@ -201,7 +201,7 @@ class PlateTable(AssetsImage):
                 all_level_dict[lv].append(song)
 
         played_map: PlateResultMap = defaultdict(lambda: defaultdict(list))
-        for lv in all_level_dict.keys():
+        for lv in all_level_dict:
             songs_in_lv = all_level_dict[lv]
             if not songs_in_lv:
                 continue
