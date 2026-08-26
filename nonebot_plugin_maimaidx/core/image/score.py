@@ -88,7 +88,7 @@ class DrawScore(ScoreBaseImage):
             )
             if _d.old_rate:
                 oldrate = Image.open(
-                    self._pic_theme_path / f"UI_TTR_Rank_{_d.old_rate}.png"
+                    self._pic_theme_path / f"UI_TTR_Rank_{RANK_MAP[_d.old_rate]}.png"
                 ).resize((63, 28))
                 self._im.alpha_composite(oldrate, (x + 145, y + 82))
             self._im.alpha_composite(rate, (x + 305, y + 82))
